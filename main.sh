@@ -35,6 +35,10 @@ while test $# -gt 0; do
       interval=`echo $1 | sed -e 's/^[^=]*=//g'`
       shift
       ;;
+    --timeout*)
+      timeout=`echo $1 | sed -e 's/^[^=]*=//g'`
+      shift
+      ;;
     *)
       break
       ;;
@@ -48,7 +52,7 @@ function poll_status {
     if [[ "$username" != "" ]]; then
       auth="-u $username:$password"
     fi;
-    STATUS_CODE=`curl -A "Web Check" -sL --connect-timeout 3 -w "%{http_code}\n" $auth $url -o /dev/null`
+    STATUS_CODE=`curl -A "Web Check" -sL --connect-timeout "${timeout:=3}" -w "%{http_code}\n" "${auth}" "${url}" -o /dev/null`
     echo "$(date +%H:%M:%S): The status code is $STATUS_CODE";
     if [[ "$STATUS_CODE" == "$code" ]]; then
           echo "success";
