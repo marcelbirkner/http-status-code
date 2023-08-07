@@ -11,7 +11,6 @@ while test $# -gt 0; do
       echo "-h, --help           Show brief help"
       echo "--url=URL            url to poll"
       echo "--interval=INTERVAL  Interval between each call, in seconds"
-      echo "--timeout=TIMEOUT    Timeout before stop polling, in seconds"
       echo "--code=CODE          status code to check"
       exit 0
       ;;
@@ -35,10 +34,7 @@ while test $# -gt 0; do
       interval=`echo $1 | sed -e 's/^[^=]*=//g'`
       shift
       ;;
-    --timeout*)
-      timeout=`echo $1 | sed -e 's/^[^=]*=//g'`
-      shift
-      ;;
+
     *)
       break
       ;;
@@ -52,7 +48,7 @@ function poll_status {
     if [[ "$username" != "" ]]; then
       auth="-u $username:$password"
     fi;
-    STATUS_CODE=`curl -A "Web Check" -sL --connect-timeout "${timeout:=3}" -w "%{http_code}\n" "${auth}" "${url}" -o /dev/null`
+    STATUS_CODE=`curl -A "Web Check" -sL --connect-timeout 3 -w "%{http_code}\n" ${auth} ${url} -o /dev/null`
     echo "$(date +%H:%M:%S): The status code is $STATUS_CODE";
     if [[ "$STATUS_CODE" == "$code" ]]; then
           echo "success";
